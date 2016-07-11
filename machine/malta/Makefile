@@ -1,0 +1,13 @@
+ARCH=mips
+XARCH=mipsel
+CPU?=mips32r2
+LINUX?=2.6.35
+MEM?=128M
+NETDEV?=pcnet
+SERIAL=ttyS0
+ORIIMG=vmlinux
+ROOTDEV?=/dev/ram0
+CCPRE?=mipsel-linux-gnu-
+KIMAGE?=$(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/vmlinux
+CCPATH?=$(PREBUILT_TOOLCHAINS)/$(XARCH)/cross-loongson-4.5.2/bin/
+ROOTFS?=$(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/rootfs.cpio.gz
