@@ -4,6 +4,8 @@
 This project aims to make a Qemu-based Linux development Lab to easier the
 learning and development of the Linux Kernel itself.
 
+![Docker Qemu Linux Lab](doc/docker-qemu-linux-lab.jpg)
+
 ## Homepage
 
     See: <http://tinylab.org/linux-lab/>
