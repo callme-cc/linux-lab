@@ -263,7 +263,7 @@ kernel: kernel-patch
 BCO ?= 1
 uboot-checkout:
 ifneq ($(BCO),0)
-	cd $(BOOTLOADER) && git checkout $(UBOOT) && cd $(TOP_DIR)
+	cd $(BOOTLOADER) && git checkout -f $(UBOOT) && cd $(TOP_DIR)
 endif
 
 UPD_MACH=$(TOP_DIR)/machine/$(MACH)/patch/uboot/$(UBOOT)/
@@ -288,7 +288,6 @@ ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
 endif
 	cp -r $(UPD_MACH)/* $(UPD)/
 endif
-	cd $(BOOTLOADER) && git checkout -f -- ./ && cd $(TOP_DIR)
 	-$(foreach p,$(shell ls $(UPD)),$(shell echo patch -r- -N -l -d $(BOOTLOADER) -p1 \< $(UPD)/$p\;))
 	git checkout -- $(UPD_MACH)/$(UPATCH)
 endif
