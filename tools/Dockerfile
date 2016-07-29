@@ -2,7 +2,7 @@
 FROM dorowu/ubuntu-desktop-lxde-vnc
 MAINTAINER Falcon wuzhangjin@gmail.com
 
-RUN sed -i -e "s/archive.ubuntu.com/cn.archive.ubuntu.com/g" /etc/apt/sources.list
+RUN sed -i -e "s%/archive.ubuntu.com%/cn.archive.ubuntu.com%g" /etc/apt/sources.list
 
 RUN apt-get -y update
 
