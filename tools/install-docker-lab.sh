@@ -2,6 +2,8 @@
 #
 # install-docker-lab.sh -- need to run with sudo
 #
+# ref: https://docs.docker.com/engine/installation/linux/ubuntulinux/
+#
 
 image_name=tinylab/linux-lab
 
