@@ -2,7 +2,9 @@
 # Linux Lab
 
 This project aims to make a Qemu-based Linux development Lab to easier the
-learning and development of the Linux Kernel itself.
+learning and development of the [Linux Kernel](http://www.kernel.org).
+
+For Linux 0.11, please try our [Linux 0.11 Lab](http://github.com/tinyclub/linux-0.11-lab).
 
 ![Docker Qemu Linux Lab](doc/docker-qemu-linux-lab.jpg)
 
