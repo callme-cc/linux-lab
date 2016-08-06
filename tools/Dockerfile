@@ -57,6 +57,9 @@ RUN apt-get install -y u-boot-tools
 # Bison
 RUN apt-get install -y bison
 
+# Qemu user static
+RUN apt-get install -y qemu-user qemu-user-static
+
 ADD enable_net_bridge.sh /
 ADD restart-net-servers.sh /
 ADD entrypoint.sh /
