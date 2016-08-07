@@ -93,8 +93,9 @@ endif
 # TODO: buildroot defconfig for $ARCH
 
 ROOTDEV ?= /dev/ram0
+FSTYPE  ?= ext2
 BUILDROOT_UROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.uboot
-BUILDROOT_HROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.ext2
+BUILDROOT_HROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.$(FSTYPE)
 BUILDROOT_ROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.gz
 
 PREBUILT_ROOTDIR = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
@@ -400,7 +401,8 @@ decompress:
 ifeq ($(HD),1)
 ifneq ($(PBR),0)
 ifneq ($(HROOTFS),$(wildcard $(HROOTFS)))
-	tools/rootfs/mkext2.sh $(ROOTDIR)
+	tools/rootfs/mkfs.sh $(ROOTDIR) $(FSTYPE)
+	git checkout -- ${PREBUILT_ROOTFS}
 endif
 endif
 endif
