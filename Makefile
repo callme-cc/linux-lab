@@ -28,7 +28,7 @@ include $(MACH_DIR)/Makefile
 # PBK = prebuilt kernel; PBR = prebuilt rootfs
 PBK ?= 1
 PBR ?= 1
-PBU ?= 1
+PBU ?= 0
 
 QEMU_GIT ?= https://github.com/qemu/qemu.git
 QEMU ?= $(TOP_DIR)/qemu/
