@@ -36,7 +36,6 @@ RUN apt-get install -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu
 #RUN bash -c 'echo deb http://www.emdebian.org/debian/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
 RUN bash -c 'echo deb http://mirrors.ustc.edu.cn/emdebian/toolchains/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
 RUN apt-get install -y emdebian-archive-keyring
-RUN apt-get -y update
 ADD cross/libgmp3c2_4.3.2+dfsg-2ubuntu1_amd64.deb /
 RUN dpkg -i /libgmp3c2_4.3.2+dfsg-2ubuntu1_amd64.deb
 RUN rm /libgmp3c2_4.3.2+dfsg-2ubuntu1_amd64.deb
