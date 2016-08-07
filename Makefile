@@ -63,7 +63,7 @@ EMULATOR = qemu-system-$(XARCH) $(BIOS_ARG)
 
 # Boot with u-boot?
 ifneq ($(UBOOT),)
-  U ?= 1
+  U ?= 0
 else
   U = 0
 endif
