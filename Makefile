@@ -17,7 +17,7 @@ TFTPBOOT = $(TOP_DIR)/tftpboot/
 
 PREBUILT_DIR = $(TOP_DIR)/prebuilt/
 PREBUILT_TOOLCHAINS = $(PREBUILT_DIR)/toolchains/
-PREBUILT_ROOTFS = $(PREBUILT_DIR)/rootfs/
+PREBUILT_ROOT = $(PREBUILT_DIR)/root/
 PREBUILT_KERNEL = $(PREBUILT_DIR)/kernel/
 PREBUILT_BIOS = $(PREBUILT_DIR)/bios/
 PREBUILT_UBOOT = $(PREBUILT_DIR)/uboot/
@@ -93,16 +93,17 @@ endif
 # TODO: buildroot defconfig for $ARCH
 
 ROOTDEV ?= /dev/ram0
-HROOTFS_SUFFIX   ?= gz
 BUILDROOT_UROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.uboot
 BUILDROOT_HROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.ext2
 BUILDROOT_ROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.gz
-PREBUILT_ROOTDIR = $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/rootfs/
+PREBUILT_ROOTDIR = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/rootfs/
 
 ifneq ($(ROOTFS),)
+  PREBUILT_ROOTFS = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/rootfs.cpio.gz
   ROOTDIR = $(PREBUILT_ROOTDIR)
 else
   ROOTDIR = $(BUILDROOT_OUTPUT)/target/
+  PREBUILT_ROOTFS = $(ROOTFS)
 endif
 
 ifeq ($(U),0)
@@ -318,10 +319,8 @@ build: root kernel
 
 # Save the built images
 root-save:
-	mkdir -p $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
-	-cp $(BUILDROOT_ROOTFS) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
-	-cp $(BUILDROOT_HROOTFS).$(HROOTFS_SUFFIX) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
-	-cp $(BUILDROOT_UROOTFS) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
+	mkdir -p $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
+	-cp $(BUILDROOT_ROOTFS) $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
 
 kernel-save:
 	mkdir -p $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
@@ -362,7 +361,8 @@ endif
 rootdir:
 ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR))
 ifneq ($(PREBUILT_ROOTDIR),$(wildcard $(PREBUILT_ROOTDIR)))
-	mkdir -p $(ROOTDIR) && cd $(ROOTDIR)/ && cp ../rootfs.cpio.gz ./ && gunzip -f rootfs.cpio.gz && cpio -idmv < rootfs.cpio
+	mkdir -p $(ROOTDIR) && cd $(ROOTDIR)/ && gunzip -f ../rootfs.cpio.gz && cpio -idmv < ../rootfs.cpio
+	git checkout -- $(PREBUILT_ROOTFS)
 endif
 endif
 
@@ -372,15 +372,19 @@ ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR))
 endif
 
 ifeq ($(U),1)
-$(BUILDROOT_UROOTFS): $(BUILDROOT_ROOTFS)
+$(ROOTFS):
 ifeq ($(findstring /dev/ram,$(ROOTDEV)),/dev/ram)
-	mkimage -A $(ARCH) -O linux -T ramdisk -C none -d $< $@
+  ifeq ($(PBR),0)
+	mkimage -A $(ARCH) -O linux -T ramdisk -C none -d $(BUILDROOT_ROOTFS) $@
+  else
+	mkimage -A $(ARCH) -O linux -T ramdisk -C none -d $(PREBUILT_ROOTFS) $@
+  endif
 endif
 
 $(UKIMAGE):
 	make kernel IMAGE=uImage
 
-tftp: $(BUILDROOT_UROOTFS) $(UKIMAGE)
+tftp: $(ROOTFS) $(UKIMAGE)
 ifeq ($(findstring /dev/ram,$(ROOTDEV)),/dev/ram)
 	cp $(ROOTFS) $(TFTPBOOT)
 endif
@@ -393,7 +397,7 @@ decompress:
 ifeq ($(HD),1)
 ifneq ($(PBR),0)
 ifneq ($(HROOTFS),$(wildcard $(HROOTFS)))
-	cd $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/ && gunzip rootfs.ext2.$(HROOTFS_SUFFIX) && cd $(TOP_DIR)
+	tools/rootfs/mkext2.sh $(ROOTDIR)
 endif
 endif
 endif

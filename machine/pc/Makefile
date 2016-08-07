@@ -9,6 +9,6 @@ ORIIMG=arch/$(ARCH)/boot/bzImage
 ROOTDEV?=/dev/ram0
 #CCPRE=i686-pc-linux-gnu-
 KIMAGE?=$(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/bzImage
-ROOTFS?=$(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/rootfs.cpio.gz
+ROOTFS?=$(PREBUILT_ROOT)/$(XARCH)/$(CPU)/rootfs.cpio.gz
 # Fixup: MP-BIOS bug: 8254 timer not connected to IO-APIC
 EXT_CMDLINE?=noapic
