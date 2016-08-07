@@ -192,7 +192,7 @@ source: qemu-source kernel-source buildroot-source
 
 emulator:
 	mkdir -p $(QEMU_OUTPUT)
-	cd $(QEMU_OUTPUT) && $(QEMU)/configure --target-list=$(ARCH)-softmmu && cd $(TOP_DIR)
+	cd $(QEMU_OUTPUT) && $(QEMU)/configure --target-list=$(XARCH)-softmmu && cd $(TOP_DIR)
 	make -C $(QEMU_OUTPUT) -j$(HOST_CPU_THREADS)
 
 # Toolchains
