@@ -45,7 +45,7 @@ RUN apt-get install -y --force-yes gcc-4.3-mipsel-linux-gnu
 
 # NFS server
 RUN apt-get install -y nfs-kernel-server
-ADD nfs-server/exports /etc/
+ADD rootfs/nfs-server-exports /etc/
 
 # TFTP Server
 RUN apt-get install -y tftpd-hpa tftp-hpa

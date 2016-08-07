@@ -96,11 +96,14 @@ ROOTDEV ?= /dev/ram0
 BUILDROOT_UROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.uboot
 BUILDROOT_HROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.ext2
 BUILDROOT_ROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.gz
-PREBUILT_ROOTDIR = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/rootfs/
+
+PREBUILT_ROOTDIR = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
+PREBUILT_KERNELDIR = $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
+PREBUILT_UBOOTDIR = $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
 
 ifneq ($(ROOTFS),)
-  PREBUILT_ROOTFS = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/rootfs.cpio.gz
-  ROOTDIR = $(PREBUILT_ROOTDIR)
+  PREBUILT_ROOTFS = $(PREBUILT_ROOTDIR)/rootfs.cpio.gz
+  ROOTDIR = $(PREBUILT_ROOTDIR)/rootfs
 else
   ROOTDIR = $(BUILDROOT_OUTPUT)/target/
   PREBUILT_ROOTFS = $(ROOTFS)
@@ -319,17 +322,17 @@ build: root kernel
 
 # Save the built images
 root-save:
-	mkdir -p $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
-	-cp $(BUILDROOT_ROOTFS) $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
+	mkdir -p $(PREBUILT_ROOTDIR)/
+	-cp $(BUILDROOT_ROOTFS) $(PREBUILT_ROOTDIR)/
 
 kernel-save:
-	mkdir -p $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
-	-cp $(LINUX_KIMAGE) $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
-	-cp $(LINUX_UKIMAGE) $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
+	mkdir -p $(PREBUILT_KERNELDIR)
+	-cp $(LINUX_KIMAGE) $(PREBUILT_KERNELDIR)
+	-cp $(LINUX_UKIMAGE) $(PREBUILT_KERNELDIR)
 
 uboot-save:
-	mkdir -p $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
-	-cp $(UBOOT_BIMAGE) $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
+	mkdir -p $(PREBUILT_UBOOTDIR)
+	-cp $(UBOOT_BIMAGE) $(PREBUILT_UBOOTDIR)
 
 uconfig-save:
 	-cp $(BOOTLOADER_OUTPUT)/.config $(MACH_DIR)/uboot_$(UBOOT)_defconfig
@@ -359,15 +362,15 @@ endif
 
 
 rootdir:
-ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR))
-ifneq ($(PREBUILT_ROOTDIR),$(wildcard $(PREBUILT_ROOTDIR)))
+ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR)/rootfs)
+ifneq ($(PREBUILT_ROOTDIR)/rootfs,$(wildcard $(PREBUILT_ROOTDIR)/rootfs))
 	mkdir -p $(ROOTDIR) && cd $(ROOTDIR)/ && gunzip -f ../rootfs.cpio.gz && cpio -idmv < ../rootfs.cpio
 	git checkout -- $(PREBUILT_ROOTFS)
 endif
 endif
 
 rootdir-clean:
-ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR))
+ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR)/rootfs)
 	-rm -rf $(ROOTDIR)
 endif
 
