@@ -102,7 +102,7 @@ Boot it:
 
     $ make boot PBK=0 PBR=0  # Disable prebuilt kernel and rootfs
 
-    $ make boot U=0  # Boot without Uboot
+    $ make boot U=1  # Boot with Uboot
 
 Boot with NFS-rootfs or RamFs:
 
