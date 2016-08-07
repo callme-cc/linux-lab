@@ -4,6 +4,9 @@ MAINTAINER Falcon wuzhangjin@gmail.com
 
 RUN sed -i -e "s%/archive.ubuntu.com%/cn.archive.ubuntu.com%g" /etc/apt/sources.list
 
+#RUN bash -c 'echo deb http://www.emdebian.org/debian/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
+RUN bash -c 'echo deb http://mirrors.ustc.edu.cn/emdebian/toolchains/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
+
 RUN apt-get -y update
 
 RUN apt-get install -y vim cscope exuberant-ctags build-essential
@@ -33,14 +36,12 @@ RUN apt-get install -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu
 
 # Install mips toolchain
 
-#RUN bash -c 'echo deb http://www.emdebian.org/debian/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
-RUN bash -c 'echo deb http://mirrors.ustc.edu.cn/emdebian/toolchains/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
 RUN apt-get install -y emdebian-archive-keyring
 ADD cross/libgmp3c2_4.3.2+dfsg-2ubuntu1_amd64.deb /
 RUN dpkg -i /libgmp3c2_4.3.2+dfsg-2ubuntu1_amd64.deb
 RUN rm /libgmp3c2_4.3.2+dfsg-2ubuntu1_amd64.deb
 RUN apt-get install -y --force-yes gcc-4.3-mipsel-linux-gnu
-#RUN apt-get install -y --force-yes install gcc-4.7-mipsel-linux-gnu
+#RUN apt-get install -y --force-yes gcc-4.7-mipsel-linux-gnu
 
 # NFS server
 RUN apt-get install -y nfs-kernel-server
