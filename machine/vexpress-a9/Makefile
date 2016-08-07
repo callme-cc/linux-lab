@@ -1,0 +1,17 @@
+ARCH=arm
+XARCH=$(ARCH)
+CPU?=cortex-a9
+MEM?=128M
+LINUX?=3.18
+NETDEV?=lan9118
+SERIAL=ttyAMA0
+ROOTDEV?=/dev/mmcblk0
+ORIIMG=arch/$(ARCH)/boot/zImage
+UORIIMG=arch/$(ARCH)/boot/uImage
+CCPRE?=arm-linux-gnueabi-
+BIMAGE?=$(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/u-boot
+KIMAGE?=$(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/zImage
+UKIMAGE?=$(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/uImage
+ROOTFS?=$(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/rootfs.cpio.gz
+UROOTFS?=$(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/rootfs.cpio.uboot
+HROOTFS?=$(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/rootfs.ext2

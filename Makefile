@@ -113,6 +113,14 @@ else
   ROOTFS = $(UROOTFS)
 endif
 
+HD = 0
+ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
+  HD = 1
+endif
+ifeq ($(findstring /dev/mmc,$(ROOTDEV)),/dev/mmc)
+  HD = 1
+endif
+
 ifeq ($(PBR),0)
   ROOTDIR = $(BUILDROOT_OUTPUT)/target/
   ifeq ($(U),0)
@@ -122,10 +130,8 @@ ifeq ($(PBR),0)
   else
     ROOTFS = $(BUILDROOT_UROOTFS)
   endif
-endif
 
-ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
-  ifeq ($(PBR),0)
+  ifeq ($(HD),1)
     HROOTFS = $(BUILDROOT_HROOTFS)
   endif
 endif
@@ -281,7 +287,7 @@ ifeq ($(ROOTDEV),/dev/nfs)
 	sed -i "s/tftpboot 0x00807fc0 rootfs.cpio.uboot;//g" $(UPD_MACH)/$(UPATCH)
 	sed -i "s/bootm 0x7fc0 0x807fc0/bootm 0x7fc0/g" $(UPD_MACH)/$(UPATCH)
 endif
-ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
+ifeq ($(HD),1)
 	sed -i "s%root=/dev/ram%root=$(ROOTDEV)%g" $(UPD_MACH)/$(UPATCH)
 	sed -i "s/tftpboot 0x00807fc0 rootfs.cpio.uboot;//g" $(UPD_MACH)/$(UPATCH)
 	sed -i "s/bootm 0x7fc0 0x807fc0/bootm 0x7fc0/g" $(UPD_MACH)/$(UPATCH)
@@ -313,27 +319,27 @@ build: root kernel
 # Save the built images
 root-save:
 	mkdir -p $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
-	cp $(BUILDROOT_ROOTFS) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
+	-cp $(BUILDROOT_ROOTFS) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
 	-cp $(BUILDROOT_HROOTFS).$(HROOTFS_SUFFIX) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
 	-cp $(BUILDROOT_UROOTFS) $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/
 
 kernel-save:
 	mkdir -p $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
-	cp $(LINUX_KIMAGE) $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
+	-cp $(LINUX_KIMAGE) $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
 	-cp $(LINUX_UKIMAGE) $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
 
 uboot-save:
 	mkdir -p $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
-	cp $(UBOOT_BIMAGE) $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
+	-cp $(UBOOT_BIMAGE) $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
 
 uconfig-save:
-	cp $(BOOTLOADER_OUTPUT)/.config $(MACH_DIR)/uboot_$(UBOOT)_defconfig
+	-cp $(BOOTLOADER_OUTPUT)/.config $(MACH_DIR)/uboot_$(UBOOT)_defconfig
 
 kconfig-save:
-	cp $(KERNEL_OUTPUT)/.config $(MACH_DIR)/linux_$(LINUX)_defconfig
+	-cp $(KERNEL_OUTPUT)/.config $(MACH_DIR)/linux_$(LINUX)_defconfig
 
 rconfig-save:
-	cp $(BUILDROOT_OUTPUT)/.config $(MACH_DIR)/buildroot_$(CPU)_defconfig
+	-cp $(BUILDROOT_OUTPUT)/.config $(MACH_DIR)/buildroot_$(CPU)_defconfig
 
 
 save: root-save kernel-save rconfig-save kconfig-save
@@ -347,6 +353,9 @@ ifeq ($(U),0)
 endif
 ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
   BOOT_CMD += -hda $(HROOTFS)
+endif
+ifeq ($(findstring /dev/mmc,$(ROOTDEV)),/dev/mmc)
+  BOOT_CMD += -sd $(HROOTFS)
 endif
 
 
@@ -381,7 +390,7 @@ tftp:
 endif
 
 decompress:
-ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
+ifeq ($(HD),1)
 ifneq ($(PBR),0)
 ifneq ($(HROOTFS),$(wildcard $(HROOTFS)))
 	cd $(PREBUILT_ROOTFS)/$(XARCH)/$(CPU)/ && gunzip rootfs.ext2.$(HROOTFS_SUFFIX) && cd $(TOP_DIR)
