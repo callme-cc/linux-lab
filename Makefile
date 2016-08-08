@@ -169,9 +169,9 @@ mach:
 	@find machine/$(MACH) -name "Makefile" -printf "[ %p ]:\n" -exec cat -n {} \; \
 		| sed -e "s%machine/\(.*\)/Makefile%\1%g" \
 		| sed -e "s/[[:digit:]]\{2,\}\t/  /g;s/[[:digit:]]\{1,\}\t/ /g"
-
-mach-config: mach
+ifneq ($(MACH),)
 	@echo $(MACH) > $(TOP_DIR)/.config
+endif
 
 mach-list:
 	make mach MACH=

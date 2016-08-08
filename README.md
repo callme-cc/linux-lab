@@ -127,15 +127,13 @@ kernel and if issue still exists, then try to fix up it:
 By default, the default machine: 'versatilepb' is used, we can configure, build
 and boot for a specific machine with 'MACH', for example:
 
-    $ make MACH=malta root-defconfig
-    $ make MACH=malta root
-    $ make MACH=malta kernel-defconfig
-    $ make MACH=malta kernel
-    $ make MACH=malta boot
+    $ make MACH=malta
+    $ make root-defconfig
+    $ make root
+    $ make kernel-defconfig
+    $ make kernel
+    $ make boot
 
-Or simply do:
-
-    $ make MACH=malta mach-config
 
 ## More
 
