@@ -22,7 +22,9 @@ PREBUILT_KERNEL = $(PREBUILT_DIR)/kernel/
 PREBUILT_BIOS = $(PREBUILT_DIR)/bios/
 PREBUILT_UBOOT = $(PREBUILT_DIR)/uboot/
 
-include $(MACH_DIR)/Makefile
+ifneq ($(MACH),)
+  include $(MACH_DIR)/Makefile
+endif
 
 # Allow to disable prebuilt things
 # PBK = prebuilt kernel; PBR = prebuilt rootfs
@@ -163,25 +165,16 @@ CMDLINE_NG = $(CMDLINE) console=$(SERIAL)
 CMDLINE_G = $(CMDLINE) console=$(CONSOLE)
 
 # For debug
-env:
-	@echo "[$(MACH)]:"
-	@echo "   $(XARCH)"
-	@echo "   $(CPU)"
-	@echo "   $(NETDEV)"
-	@echo "   $(SERIAL)"
-	@echo "   $(LINUX)"
-	@echo "   $(MEM)"
-	@echo "   $(ROOTDEV)"
-	@echo "   $(CCPRE)"
-	@echo "   $(ROOTFS)"
-	@echo "   $(CCPATH)"
+mach:
+	@find machine/$(MACH) -name "Makefile" -printf "[ %p ]:\n" -exec cat -n {} \; \
+		| sed -e "s%machine/\(.*\)/Makefile%\1%g" \
+		| sed -e "s/[[:digit:]]\{2,\}\t/  /g;s/[[:digit:]]\{1,\}\t/ /g"
 
-mach-config:
+mach-config: mach
 	@echo $(MACH) > $(TOP_DIR)/.config
-	@find machine/$(MACH) -name "Makefile" -printf "* [%p]\n" -exec cat -n {} \;
 
 mach-list:
-	@find machine/ -name "Makefile" -printf "* [%p]\n" -exec cat -n {} \;
+	make mach MACH=
 
 # Please makesure docker, git are installed
 # TODO: Use gitsubmodule instead, ref: http://tinylab.org/nodemcu-kickstart/
