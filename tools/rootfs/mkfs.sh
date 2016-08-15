@@ -6,9 +6,9 @@
 ROOTDIR=$1
 FSTYPE=$2
 
-[ -z "$FSTYPE" ] && FSTYPE=ext2
+[ -z "${FSTYPE}" ] && FSTYPE=ext2
 
-ROOTFS=${ROOTDIR}/../rootfs.$(FSTYPE)
+ROOTFS=${ROOTDIR}/../rootfs.${FSTYPE}
 
 if [ -f ${ROOTDIR}/../rootfs.cpio.gz ]; then
   ROOTFS_SIZE=`ls -s ${ROOTDIR}/../rootfs.cpio.gz | cut -d' ' -f1`
@@ -21,7 +21,7 @@ fi
 echo $ROOTFS_SIZE
 
 dd if=/dev/zero of=${ROOTFS} bs=1024 count=$ROOTFS_SIZE
-yes | mkfs.$(FSTYPE) ${ROOTFS}
+yes | mkfs.${FSTYPE} ${ROOTFS}
 
 mkdir -p ${ROOTDIR}
 
