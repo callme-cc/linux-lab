@@ -26,12 +26,6 @@ ifneq ($(MACH),)
   include $(MACH_DIR)/Makefile
 endif
 
-# Allow to disable prebuilt things
-# PBK = prebuilt kernel; PBR = prebuilt rootfs
-PBK ?= 1
-PBR ?= 1
-PBU ?= 0
-
 QEMU_GIT ?= https://github.com/qemu/qemu.git
 QEMU_SRC ?= $(TOP_DIR)/qemu/
 
@@ -63,16 +57,17 @@ endif
 
 EMULATOR = qemu-system-$(XARCH) $(BIOS_ARG)
 
-# Boot with u-boot?
-ifneq ($(UBOOT),)
-  U ?= 0
-else
-  U = 0
-endif
+# prefer new binaries to the prebuilt ones
+# PBK = prebuilt kernel; PBR = prebuilt rootfs
 
 # TODO: kernel defconfig for $ARCH with $LINUX
 LINUX_KIMAGE = $(KERNEL_OUTPUT)/$(ORIIMG)
 LINUX_UKIMAGE = $(KERNEL_OUTPUT)/$(UORIIMG)
+ifeq ($(LINUX_KIMAGE),$(wildcard $(LINUX_KIMAGE)))
+  PBK ?= 0
+else
+  PBK = 1
+endif
 
 KIMAGE ?= $(LINUX_KIMAGE)
 UKIMAGE ?= $(LINUX_UKIMAGE)
@@ -83,6 +78,22 @@ endif
 
 # Uboot image
 UBOOT_BIMAGE = $(BOOTLOADER_OUTPUT)/u-boot
+ifeq ($(UBOOT_BIMAGE),$(wildcard $(UBOOT_BIMAGE)))
+  PBU ?= 0
+else
+  PBU = 1
+endif
+
+ifeq ($(UBOOT_BIMAGE),$(wildcard $(UBOOT_BIMAGE)))
+  U ?= 1
+else
+  ifeq ($(UBOOT),$(wildcard $(UBOOT)))
+    U ?= 1
+  else
+    U = 0
+  endif
+endif
+
 BIMAGE ?= $(UBOOT_BIMAGE)
 ifeq ($(PBU),0)
   BIMAGE = $(UBOOT_BIMAGE)
@@ -103,6 +114,12 @@ BUILDROOT_ROOTFS = $(BUILDROOT_OUTPUT)/images/rootfs.cpio.gz
 PREBUILT_ROOTDIR = $(PREBUILT_ROOT)/$(XARCH)/$(CPU)/
 PREBUILT_KERNELDIR = $(PREBUILT_KERNEL)/$(XARCH)/$(MACH)/$(LINUX)/
 PREBUILT_UBOOTDIR = $(PREBUILT_UBOOT)/$(XARCH)/$(MACH)/$(UBOOT)/
+
+ifeq ($(BUILDROOT_ROOTFS),$(wildcard $(BUILDROOT_ROOTFS)))
+  PBR ?= 0
+else
+  PBR = 1
+endif
 
 ifneq ($(ROOTFS),)
   PREBUILT_ROOTFS = $(PREBUILT_ROOTDIR)/rootfs.cpio.gz
