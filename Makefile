@@ -33,17 +33,17 @@ PBR ?= 1
 PBU ?= 0
 
 QEMU_GIT ?= https://github.com/qemu/qemu.git
-QEMU ?= $(TOP_DIR)/qemu/
+QEMU_SRC ?= $(TOP_DIR)/qemu/
 
 BOOTLOADER_GIT ?= https://github.com/u-boot/u-boot.git
-BOOTLOADER ?= $(TOP_DIR)/u-boot/
+BOOTLOADER_SRC ?= $(TOP_DIR)/u-boot/
 
 KERNEL_GIT ?= git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
-KERNEL ?= $(TOP_DIR)/linux-stable/
+KERNEL_SRC ?= $(TOP_DIR)/linux-stable/
 
 # Use faster mirror instead of git://git.buildroot.net/buildroot.git
 BUILDROOT_GIT ?= https://github.com/buildroot/buildroot
-BUILDROOT ?= $(TOP_DIR)/buildroot/
+BUILDROOT_SRC ?= $(TOP_DIR)/buildroot/
 
 QEMU_OUTPUT = $(TOP_DIR)/output/$(XARCH)/qemu/
 BOOTLOADER_OUTPUT = $(TOP_DIR)/output/$(XARCH)/uboot-$(UBOOT)-$(MACH)/
@@ -196,7 +196,7 @@ source: qemu-source kernel-source buildroot-source
 
 emulator:
 	mkdir -p $(QEMU_OUTPUT)
-	cd $(QEMU_OUTPUT) && $(QEMU)/configure --target-list=$(XARCH)-softmmu && cd $(TOP_DIR)
+	cd $(QEMU_OUTPUT) && $(QEMU_SRC)/configure --target-list=$(XARCH)-softmmu && cd $(TOP_DIR)
 	make -C $(QEMU_OUTPUT) -j$(HOST_CPU_THREADS)
 
 # Toolchains
@@ -211,17 +211,17 @@ toolchain-clean:
 # Configure Buildroot
 root-defconfig: $(MACH_DIR)/buildroot_$(CPU)_defconfig
 	mkdir -p $(BUILDROOT_OUTPUT)
-	cp $(MACH_DIR)/buildroot_$(CPU)_defconfig $(BUILDROOT)/configs/
-	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT) buildroot_$(CPU)_defconfig
+	cp $(MACH_DIR)/buildroot_$(CPU)_defconfig $(BUILDROOT_SRC)/configs/
+	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC) buildroot_$(CPU)_defconfig
 
 root-menuconfig:
-	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT) menuconfig
+	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC) menuconfig
 
 # Build Buildroot
 root:
-	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT) -j$(HOST_CPU_THREADS)
+	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC) -j$(HOST_CPU_THREADS)
 	cp $(MISC)/if-pre-up.d/config_iface $(BUILDROOT_OUTPUT)/target/etc/network/if-pre-up.d/config_iface
-	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT)
+	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC)
 ifeq ($(U),1)
 ifeq ($(findstring /dev/ram,$(ROOTDEV)),/dev/ram)
 	make $(BUILDROOT_UROOTFS)
@@ -232,16 +232,16 @@ endif
 KCO ?= 1
 kernel-checkout:
 ifneq ($(KCO),0)
-	cd $(KERNEL) && git checkout -f linux-$(LINUX).y && cd $(TOP_DIR)
+	cd $(KERNEL_SRC) && git checkout -f linux-$(LINUX).y && cd $(TOP_DIR)
 endif
 
 kernel-defconfig: $(MACH_DIR)/linux_$(LINUX)_defconfig kernel-checkout
 	mkdir -p $(KERNEL_OUTPUT)
-	cp $(MACH_DIR)/linux_$(LINUX)_defconfig $(KERNEL)/arch/$(ARCH)/configs/
-	make O=$(KERNEL_OUTPUT) -C $(KERNEL) ARCH=$(ARCH) linux_$(LINUX)_defconfig
+	cp $(MACH_DIR)/linux_$(LINUX)_defconfig $(KERNEL_SRC)/arch/$(ARCH)/configs/
+	make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) linux_$(LINUX)_defconfig
 
 kernel-menuconfig:
-	make O=$(KERNEL_OUTPUT) -C $(KERNEL) ARCH=$(ARCH) menuconfig
+	make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) menuconfig
 
 # Build Kernel
 
@@ -252,7 +252,7 @@ kernel-patch:
 ifneq ($(KP),0)
 	# Kernel 2.6.x need include/linux/compiler-gcc5.h
 ifeq ($(findstring 2.6.,$(LINUX)),2.6.)
-	-$(foreach p,$(shell ls $(KPD)),$(shell echo patch -r- -N -l -d $(KERNEL) -p1 \< $(KPD)/$p\;))
+	-$(foreach p,$(shell ls $(KPD)),$(shell echo patch -r- -N -l -d $(KERNEL_SRC) -p1 \< $(KPD)/$p\;))
 endif
 endif
 
@@ -261,13 +261,13 @@ ifeq ($(U),1)
 endif
 
 kernel: kernel-patch
-	PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL) ARCH=$(ARCH) CROSS_COMPILE=$(CCPRE) -j$(HOST_CPU_THREADS) $(IMAGE)
+	PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) CROSS_COMPILE=$(CCPRE) -j$(HOST_CPU_THREADS) $(IMAGE)
 
 # Configure Uboot
 BCO ?= 1
 uboot-checkout:
 ifneq ($(BCO),0)
-	cd $(BOOTLOADER) && git checkout -f $(UBOOT) && cd $(TOP_DIR)
+	cd $(BOOTLOADER_SRC) && git checkout -f $(UBOOT) && cd $(TOP_DIR)
 endif
 
 UPD_MACH=$(TOP_DIR)/machine/$(MACH)/patch/uboot/$(UBOOT)/
@@ -292,21 +292,21 @@ ifeq ($(HD),1)
 endif
 	cp -r $(UPD_MACH)/* $(UPD)/
 endif
-	-$(foreach p,$(shell ls $(UPD)),$(shell echo patch -r- -N -l -d $(BOOTLOADER) -p1 \< $(UPD)/$p\;))
+	-$(foreach p,$(shell ls $(UPD)),$(shell echo patch -r- -N -l -d $(BOOTLOADER_SRC) -p1 \< $(UPD)/$p\;))
 	git checkout -- $(UPD_MACH)/$(UPATCH)
 endif
 
 uboot-defconfig: $(MACH_DIR)/uboot_$(UBOOT)_defconfig uboot-checkout uboot-patch
 	mkdir -p $(BOOTLOADER_OUTPUT)
-	cp $(MACH_DIR)/uboot_$(UBOOT)_defconfig $(BOOTLOADER)/configs/
-	make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER) ARCH=$(ARCH) uboot_$(UBOOT)_defconfig
+	cp $(MACH_DIR)/uboot_$(UBOOT)_defconfig $(BOOTLOADER_SRC)/configs/
+	make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER_SRC) ARCH=$(ARCH) uboot_$(UBOOT)_defconfig
 
 uboot-menuconfig:
-	make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER) ARCH=$(ARCH) menuconfig
+	make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER_SRC) ARCH=$(ARCH) menuconfig
 
 # Build Uboot
 uboot:
-	PATH=$(PATH):$(CCPATH) make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER) ARCH=$(ARCH) CROSS_COMPILE=$(CCPRE) -j$(HOST_CPU_THREADS)
+	PATH=$(PATH):$(CCPATH) make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER_SRC) ARCH=$(ARCH) CROSS_COMPILE=$(CCPRE) -j$(HOST_CPU_THREADS)
 
 # Config Kernel and Rootfs
 config: root-defconfig kernel-defconfig
@@ -424,13 +424,13 @@ emulator-clean:
 	make -C $(QEMU_OUTPUT) clean
 
 root-clean:
-	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT) clean
+	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC) clean
 
 uboot-clean:
-	make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER) clean
+	make O=$(BOOTLOADER_OUTPUT) -C $(BOOTLOADER_SRC) clean
 
 kernel-clean:
-	make O=$(KERNEL_OUTPUT) -C $(KERNEL) clean
+	make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) clean
 
 clean: emulator-clean root-clean kernel-clean rootdir-clean uboot-clean
 
