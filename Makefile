@@ -262,15 +262,15 @@ kernel-menuconfig:
 
 # Build Kernel
 
+KPD_MACH=$(TOP_DIR)/machine/$(MACH)/patch/linux/$(LINUX)/
 KPD=$(TOP_DIR)/patch/linux/$(LINUX)/
 
 KP ?= 1
 kernel-patch:
 ifneq ($(KP),0)
 	# Kernel 2.6.x need include/linux/compiler-gcc5.h
-ifeq ($(findstring 2.6.,$(LINUX)),2.6.)
+	-$(foreach p,$(shell ls $(KPD_MACH)),$(shell echo patch -r- -N -l -d $(KERNEL_SRC) -p1 \< $(KPD_MACH)/$p\;))
 	-$(foreach p,$(shell ls $(KPD)),$(shell echo patch -r- -N -l -d $(KERNEL_SRC) -p1 \< $(KPD)/$p\;))
-endif
 endif
 
 ifeq ($(U),1)
