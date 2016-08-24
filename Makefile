@@ -211,9 +211,26 @@ source: qemu-source kernel-source buildroot-source
 
 # Qemu
 
-emulator:
+QCO ?= 1
+emulator-checkout:
+ifneq ($(QEMU),)
+ifneq ($(QCO),0)
+	cd $(QEMU_SRC) && git checkout -f stable-$(QEMU) && cd $(TOP_DIR)
+endif
+endif
+
+QPD=$(TOP_DIR)/patch/qemu/$(QEMU)/
+QP ?= 1
+emulator-patch: emulator-checkout
+ifneq ($(QEMU),)
+ifneq ($(QP),0)
+	-$(foreach p,$(shell ls $(QPD)),$(shell echo patch -r- -N -l -d $(QEMU_SRC) -p1 \< $(QPD)/$p\;))
+endif
+endif
+
+emulator: emulator-patch
 	mkdir -p $(QEMU_OUTPUT)
-	cd $(QEMU_OUTPUT) && $(QEMU_SRC)/configure --target-list=$(XARCH)-softmmu && cd $(TOP_DIR)
+	cd $(QEMU_OUTPUT) && $(QEMU_SRC)/configure --target-list=$(XARCH)-softmmu --disable-kvm && cd $(TOP_DIR)
 	make -C $(QEMU_OUTPUT) -j$(HOST_CPU_THREADS)
 
 # Toolchains

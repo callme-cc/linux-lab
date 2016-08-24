@@ -60,6 +60,9 @@ RUN apt-get install -y bison
 # Qemu user static
 RUN apt-get install -y qemu-user qemu-user-static
 
+# For Qemu 0.10
+RUN apt-get install -y libsdl1.2-dev
+
 ADD enable_net_bridge.sh /
 ADD restart-net-servers.sh /
 ADD entrypoint.sh /

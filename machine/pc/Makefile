@@ -2,6 +2,7 @@ ARCH     = x86
 XARCH    = i386
 CPU     ?= i686
 MEM     ?= 128M
+#QEMU    ?= 0.10
 LINUX   ?= 2.6.35
 NETDEV  ?= ne2k_pci
 SERIAL  ?= ttyS0
