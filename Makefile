@@ -365,8 +365,14 @@ uboot-save:
 uconfig-save:
 	-cp $(BOOTLOADER_OUTPUT)/.config $(MACH_DIR)/uboot_$(UBOOT)_defconfig
 
+# kernel < 2.6.36 doesn't support: `make savedefconfig`
 kconfig-save:
+	-PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) savedefconfig
+ifeq ($(KERNEL_OUTPUT)/defconfig,$(wildcard $(KERNEL_OUTPUT)/defconfig))
+	-cp $(KERNEL_OUTPUT)/defconfig $(MACH_DIR)/linux_$(LINUX)_defconfig
+else
 	-cp $(KERNEL_OUTPUT)/.config $(MACH_DIR)/linux_$(LINUX)_defconfig
+endif
 
 rconfig-save:
 	-cp $(BUILDROOT_OUTPUT)/.config $(MACH_DIR)/buildroot_$(CPU)_defconfig
