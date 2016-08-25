@@ -388,7 +388,12 @@ else
 endif
 
 rconfig-save:
+	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC) -j$(HOST_CPU_THREADS) savedefconfig
+ifeq ($(BUILDROOT_OUTPUT)/defconfig,$(wildcard $(BUILDROOT_OUTPUT)/defconfig))
+	-cp $(BUILDROOT_OUTPUT)/defconfig $(MACH_DIR)/buildroot_$(CPU)_defconfig
+else
 	-cp $(BUILDROOT_OUTPUT)/.config $(MACH_DIR)/buildroot_$(CPU)_defconfig
+endif
 
 
 save: root-save kernel-save rconfig-save kconfig-save
