@@ -100,14 +100,16 @@ Boot it:
 
     $ make boot     # Boot with graphic
 
-    $ make boot PBK=0 PBR=0  # Disable prebuilt kernel and rootfs
+    $ make boot PBK=0 PBD=0 PBR=0 # Disable prebuilt kernel, dtb and rootfs
 
     $ make boot U=1  # Boot with Uboot
 
-Boot with NFS-rootfs or RamFs:
+Boot with different rootfs:
 
+    $ make boot ROOTDEV=/dev/ram    # default
     $ make boot ROOTDEV=/dev/nfs
-    $ make boot ROOTDEV=/dev/ram
+    $ make boot ROOTDEV=/dev/sda
+    $ make boot ROOTDEV=/dev/mmcblk0
 
 Save your changes:
 
