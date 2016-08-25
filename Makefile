@@ -377,7 +377,7 @@ uconfig-save:
 
 # kernel < 2.6.36 doesn't support: `make savedefconfig`
 kconfig-save:
-	-PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) savedefconfig
+	-PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) savedefconfig
 ifeq ($(KERNEL_OUTPUT)/defconfig,$(wildcard $(KERNEL_OUTPUT)/defconfig))
 	-cp $(KERNEL_OUTPUT)/defconfig $(MACH_DIR)/linux_$(LINUX)_defconfig
 else
