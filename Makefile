@@ -58,9 +58,10 @@ endif
 EMULATOR = qemu-system-$(XARCH) $(BIOS_ARG)
 
 # prefer new binaries to the prebuilt ones
-# PBK = prebuilt kernel; PBR = prebuilt rootfs
+# PBK = prebuilt kernel; PBR = prebuilt rootfs; PBD= prebuilt dtb
 
 # TODO: kernel defconfig for $ARCH with $LINUX
+LINUX_DTB    = $(KERNEL_OUTPUT)/$(ORIDTB)
 LINUX_KIMAGE = $(KERNEL_OUTPUT)/$(ORIIMG)
 LINUX_UKIMAGE = $(KERNEL_OUTPUT)/$(UORIIMG)
 ifeq ($(LINUX_KIMAGE),$(wildcard $(LINUX_KIMAGE)))
@@ -68,12 +69,21 @@ ifeq ($(LINUX_KIMAGE),$(wildcard $(LINUX_KIMAGE)))
 else
   PBK = 1
 endif
+ifeq ($(LINUX_DTB),$(wildcard $(LINUX_DTB)))
+  PBD ?= 0
+else
+  PBD = 1
+endif
 
 KIMAGE ?= $(LINUX_KIMAGE)
 UKIMAGE ?= $(LINUX_UKIMAGE)
+DTB     ?= $(LINUX_DTB)
 ifeq ($(PBK),0)
   KIMAGE = $(LINUX_KIMAGE)
   UKIMAGE = $(LINUX_UKIMAGE)
+endif
+ifeq ($(PBD),0)
+  DTB = $(LINUX_DTB)
 endif
 
 # Uboot image
@@ -392,6 +402,9 @@ ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
 endif
 ifeq ($(findstring /dev/mmc,$(ROOTDEV)),/dev/mmc)
   BOOT_CMD += -sd $(HROOTFS)
+endif
+ifeq ($(DTB),$(wildcard $(DTB)))
+  BOOT_CMD += -dtb $(DTB)
 endif
 
 
