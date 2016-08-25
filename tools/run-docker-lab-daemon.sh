@@ -27,7 +27,7 @@ CONTAINER_ID=$(docker run --privileged \
 
 docker logs $CONTAINER_ID | sed -n 1p
 
-echo $local_port > $TOP_DIR/lab_local_port
+echo $local_port > $TOP_DIR/.lab_local_port
 which $browser 2>&1>/dev/null \
     && ($browser $url 2>&1>/dev/null &) \
     && echo "please login $url with password: $pwd" && exit 0
