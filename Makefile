@@ -97,7 +97,7 @@ endif
 ifeq ($(UBOOT_BIMAGE),$(wildcard $(UBOOT_BIMAGE)))
   U ?= 1
 else
-  ifeq ($(UBOOT),$(wildcard $(UBOOT)))
+  ifeq ($(PREBUILT_UBOOTDIR)/u-boot,$(wildcard $(PREBUILT_UBOOTDIR)/u-boot))
     U ?= 1
   else
     U = 0
@@ -149,6 +149,9 @@ endif
 
 HD = 0
 ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
+  HD = 1
+endif
+ifeq ($(findstring /dev/hda,$(ROOTDEV)),/dev/hda)
   HD = 1
 endif
 ifeq ($(findstring /dev/mmc,$(ROOTDEV)),/dev/mmc)
@@ -300,6 +303,8 @@ ifneq ($(KP),0)
 	-$(foreach p,$(shell ls $(KPD)),$(shell echo patch -r- -N -l -d $(KERNEL_SRC) -p1 \< $(KPD)/$p\;))
 endif
 
+IMAGE = $(shell basename $(ORIIMG))
+
 ifeq ($(U),1)
   IMAGE=uImage
 endif
@@ -405,6 +410,9 @@ ifeq ($(U),0)
     BOOT_CMD += -initrd $(ROOTFS)
   endif
 endif
+ifeq ($(findstring /dev/hda,$(ROOTDEV)),/dev/hda)
+  BOOT_CMD += -hda $(HROOTFS)
+endif
 ifeq ($(findstring /dev/sda,$(ROOTDEV)),/dev/sda)
   BOOT_CMD += -hda $(HROOTFS)
 endif
@@ -444,9 +452,9 @@ $(UKIMAGE):
 
 tftp: $(ROOTFS) $(UKIMAGE)
 ifeq ($(findstring /dev/ram,$(ROOTDEV)),/dev/ram)
-	cp $(ROOTFS) $(TFTPBOOT)
+	-cp $(ROOTFS) $(TFTPBOOT)
 endif
-	cp $(UKIMAGE) $(TFTPBOOT)
+	-cp $(UKIMAGE) $(TFTPBOOT)
 else
 tftp:
 endif
