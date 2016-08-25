@@ -367,6 +367,9 @@ kernel-save:
 	mkdir -p $(PREBUILT_KERNELDIR)
 	-cp $(LINUX_KIMAGE) $(PREBUILT_KERNELDIR)
 	-cp $(LINUX_UKIMAGE) $(PREBUILT_KERNELDIR)
+ifeq ($(LINUX_DTB),$(wildcard $(LINUX_DTB)))
+	-cp $(LINUX_DTB) $(PREBUILT_KERNELDIR)
+endif
 
 uboot-save:
 	mkdir -p $(PREBUILT_UBOOTDIR)
