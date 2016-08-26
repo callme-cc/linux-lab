@@ -25,11 +25,11 @@ For Linux 0.11, please try our [Linux 0.11 Lab](http://github.com/tinyclub/linux
 
 ## Quickstart
 
-Login in `http://localhost:6080/vnc.html` with 'ubuntu' password, and then open a terminal:
+Login the VNC page via `tools/open-docker-lab.sh` with 'ubuntu' password, and then open a terminal:
 
     $ sudo -s
-    $ cd /linux-lab
-    $ make boot
+    # cd /linux-lab
+    # make boot
 
 ## Usage
 
