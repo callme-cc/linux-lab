@@ -67,8 +67,16 @@ RUN apt-get install -y qemu-user qemu-user-static
 # For Qemu 0.10
 RUN apt-get install -y libsdl1.2-dev
 
+# Allow ubuntu user use sudo without password
+ADD sudoers.d/ubuntu /etc/sudoers.d/
+RUN chmod 440 /etc/sudoers.d/ubuntu
+
+# Add shortcuts on Desktop
+ADD linux-lab.desktop /
+
 ADD enable_net_bridge.sh /
 ADD restart-net-servers.sh /
+ADD startup.sh /
 ADD entrypoint.sh /
 
 WORKDIR /linux-lab/
