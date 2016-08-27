@@ -311,8 +311,12 @@ ifeq ($(U),1)
   IMAGE=uImage
 endif
 
+ifneq ($(ORIDTB),)
+  DTBS=dtbs
+endif
+
 kernel: kernel-patch
-	PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) CROSS_COMPILE=$(CCPRE) -j$(HOST_CPU_THREADS) $(IMAGE)
+	PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) CROSS_COMPILE=$(CCPRE) -j$(HOST_CPU_THREADS) $(IMAGE) $(DTBS)
 
 # Configure Uboot
 BCO ?= 1
