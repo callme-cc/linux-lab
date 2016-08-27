@@ -6,3 +6,5 @@
 5. Add prebuilt toolchains with sysroot for buildroot
 6. Add uboot support for more archs, currently, only ARM
 7. Add Ftrace support
+8. Add LDT, LDD3 examples, need kernel modules support
+9. Add some patchsets, e.g: Preempt-RT, GC-sections
