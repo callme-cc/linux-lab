@@ -392,19 +392,15 @@ uconfig-save:
 # kernel < 2.6.36 doesn't support: `make savedefconfig`
 kconfig-save:
 	-PATH=$(PATH):$(CCPATH) make O=$(KERNEL_OUTPUT) -C $(KERNEL_SRC) ARCH=$(ARCH) savedefconfig
-ifeq ($(KERNEL_OUTPUT)/defconfig,$(wildcard $(KERNEL_OUTPUT)/defconfig))
-	-cp $(KERNEL_OUTPUT)/defconfig $(MACH_DIR)/linux_$(LINUX)_defconfig
-else
-	-cp $(KERNEL_OUTPUT)/.config $(MACH_DIR)/linux_$(LINUX)_defconfig
-endif
+	if [ -f $(KERNEL_OUTPUT)/defconfig ]; \
+	then cp $(KERNEL_OUTPUT)/defconfig $(MACH_DIR)/linux_$(LINUX)_defconfig; \
+	else cp $(KERNEL_OUTPUT)/.config $(MACH_DIR)/linux_$(LINUX)_defconfig; fi
 
 rconfig-save:
 	make O=$(BUILDROOT_OUTPUT) -C $(BUILDROOT_SRC) -j$(HOST_CPU_THREADS) savedefconfig
-ifeq ($(BUILDROOT_OUTPUT)/defconfig,$(wildcard $(BUILDROOT_OUTPUT)/defconfig))
-	-cp $(BUILDROOT_OUTPUT)/defconfig $(MACH_DIR)/buildroot_$(CPU)_defconfig
-else
-	-cp $(BUILDROOT_OUTPUT)/.config $(MACH_DIR)/buildroot_$(CPU)_defconfig
-endif
+	if [ -f $(BUILDROOT_OUTPUT)/defconfig ]; \
+	then cp $(BUILDROOT_OUTPUT)/defconfig $(MACH_DIR)/buildroot_$(CPU)_defconfig; \
+	else cp $(BUILDROOT_OUTPUT)/.config $(MACH_DIR)/buildroot_$(CPU)_defconfig; fi
 
 
 save: root-save kernel-save rconfig-save kconfig-save
