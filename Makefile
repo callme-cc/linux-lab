@@ -203,6 +203,8 @@ ifneq ($(MACH),)
 	@echo $(MACH) > $(TOP_DIR)/.config
 endif
 
+list: mach-list
+
 mach-list:
 	make mach MACH=
 
