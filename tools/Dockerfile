@@ -74,6 +74,9 @@ RUN chmod 440 /etc/sudoers.d/ubuntu
 # Add shortcuts on Desktop
 ADD linux-lab.desktop /
 
+# Tune the screen size
+ADD supervisord.conf /etc/supervisor/conf.d/
+
 ADD enable_net_bridge.sh /
 ADD restart-net-servers.sh /
 ADD startup.sh /
