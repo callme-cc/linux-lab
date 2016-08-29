@@ -31,9 +31,13 @@ Login the VNC page via `tools/open-docker-lab.sh` with 'ubuntu' password, and th
     # cd /linux-lab
     # make boot
 
-Note: If don't want to input the password, after login, remove it with this command:
+**Notes**
+
+If don't want to input the password, after login, remove it with this command:
 
     # passwd -d ubuntu
+
+If the screen size doesn't fit your display, set the scaling mode via the setting button on the top right side, or just modify the `-screen 0 1720x960x16` of `tools/supervisord.conf` to your own. the second method need to rerun `tools/install-docker-lab.sh` and `tools/run-docker-lab-daemon.h`.
 
 ## Usage
 
