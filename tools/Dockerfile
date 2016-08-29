@@ -67,6 +67,18 @@ RUN apt-get install -y qemu-user qemu-user-static
 # For Qemu 0.10
 RUN apt-get install -y libsdl1.2-dev
 
+# For cross gdb
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository -y ppa:fkrull/deadsnakes
+RUN apt-get -y update
+RUN apt-get install -y libpython2.6
+# /usr/share/gdb/syscalls/sparc-linux.xml conflicts issue?
+# please install the as required
+RUN apt-get install -y gdb-arm-linux-gnueabi
+#RUN apt-get install -y gdb-ia64-linux-gnu
+#RUN apt-get install -y gdb-mipsel-linux-gnu
+#RUN apt-get install -y gdb-powerpc-linux-gnu
+
 # Allow ubuntu user use sudo without password
 ADD sudoers.d/ubuntu /etc/sudoers.d/
 RUN chmod 440 /etc/sudoers.d/ubuntu
