@@ -119,6 +119,20 @@ Boot with different rootfs:
     $ make boot ROOTDEV=/dev/sda
     $ make boot ROOTDEV=/dev/mmcblk0
 
+Debug it:
+
+    Compile the kernel with CONFIG_DEBUG_INFO=y and boot it:
+
+    $ make boot DEBUG=1
+
+    Open a new terminal:
+
+    $ arm-linux-gnueabi-gdb output/arm/linux-4.6-versatilepb/vmlinux
+    (gdb) target remote :1234
+    (gdb) b kernel_entry
+    (gdb) c
+
+
 Save your changes:
 
     $ make save         # Save all of the configs and rootfs/kernel images
