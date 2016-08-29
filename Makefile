@@ -424,7 +424,9 @@ endif
 ifeq ($(DTB),$(wildcard $(DTB)))
   BOOT_CMD += -dtb $(DTB)
 endif
-
+ifneq ($(DEBUG),)
+  BOOT_CMD += -s -S
+endif
 
 rootdir:
 ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR)/rootfs)
