@@ -31,15 +31,19 @@ Login the VNC page via `tools/open-docker-lab.sh` with 'ubuntu' password, and th
     # cd /linux-lab
     # make boot
 
+Note: If don't want to input the password, after login, remove it with this command:
+
+    # passwd -d ubuntu
+
 ## Usage
 
 Check supported machines:
 
-    $ make mach-list
+    $ make list
 
 Check the machine specifci configuration:
 
-    $ make mach-list | grep Makefile
+    $ make list | grep Makefile
     * [machine/pc/Makefile]
     * [machine/versatilepb/Makefile]
     * [machine/g3beige/Makefile]
