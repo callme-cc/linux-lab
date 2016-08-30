@@ -23,6 +23,10 @@ For Linux 0.11, please try our [Linux 0.11 Lab](http://github.com/tinyclub/linux
     $ tools/run-docker-lab-daemon.sh
     $ tools/open-docker-lab.sh
 
+For Ubuntu 12.04, please install the new kernel at first, otherwise, docker will not work:
+
+    $ sudo apt-get install linux-generic-lts-trusty
+
 ## Quickstart
 
 Login the VNC page via `tools/open-docker-lab.sh` with 'ubuntu' password, and then open a terminal:
