@@ -5,9 +5,9 @@
 # ref: https://docs.docker.com/engine/installation/linux/ubuntulinux/
 #
 
-image_name=tinylab/linux-lab
-
 TOP_DIR=$(dirname `readlink -f $0`)
+
+IMAGE=$(< ${TOP_DIR}/lab-name)
 
 docker_without_sudo=0
 groups falcon | grep -q docker
@@ -37,7 +37,7 @@ EOF'
 
 fi
 
-sudo docker build -t $image_name $TOP_DIR/
+sudo docker build -t $IMAGE $TOP_DIR/
 
 [ $docker_without_sudo -eq 1 ] && exit 0
 

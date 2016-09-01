@@ -20,7 +20,7 @@ For Linux 0.11, please try our [Linux 0.11 Lab](http://github.com/tinyclub/linux
 ## Build the Lab
 
     $ sudo tools/install-docker-lab.sh
-    $ tools/run-docker-lab-daemon.sh
+    $ tools/run-docker-lab.sh
     $ tools/open-docker-lab.sh
 
 For Ubuntu 12.04, please install the new kernel at first, otherwise, docker will not work:
