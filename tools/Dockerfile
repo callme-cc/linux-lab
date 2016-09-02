@@ -4,14 +4,18 @@ MAINTAINER Falcon wuzhangjin@gmail.com
 
 RUN sed -i -e "s%/archive.ubuntu.com%/cn.archive.ubuntu.com%g" /etc/apt/sources.list
 
-#RUN bash -c 'echo deb http://www.emdebian.org/debian/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
-RUN bash -c 'echo deb http://mirrors.ustc.edu.cn/emdebian/toolchains/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
-
 RUN apt-get -y update
 
-RUN apt-get install -y vim cscope exuberant-ctags build-essential
+RUN apt-get install -y vim cscope exuberant-ctags
 
-RUN apt-get install -y qemu-system-x86 qemu-system-arm qemu-system-mips qemu-system-ppc
+RUN apt-get install -y gcc gdb binutils
+
+RUN apt-get install -y qemu-kvm qemu-system-x86 qemu-system-arm qemu-system-mips qemu-system-ppc
+
+RUN apt-get install -y qemu-user qemu-user-static
+
+# For Qemu 0.10
+RUN apt-get install -y libsdl1.2-dev
 
 RUN apt-get install -y bridge-utils
 
@@ -30,6 +34,11 @@ RUN apt-get install -y libc6-i386 lib32stdc++6 lib32z1
 # http://wiki.qemu.org/Hosts/Linux
 RUN apt-get install -y pkg-config libglib2.0-dev libfdt-dev libpixman-1-dev zlib1g-dev libgtk-3-dev
 
+#RUN bash -c 'echo deb http://www.emdebian.org/debian/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
+RUN bash -c 'echo deb http://mirrors.ustc.edu.cn/emdebian/toolchains/ wheezy main > /etc/apt/sources.list.d/emdebian.list'
+
+RUN apt-get -y update
+
 RUN apt-get install -y gcc-powerpc-linux-gnu gcc-powerpc64le-linux-gnu openbios-ppc
 
 RUN apt-get install -y gcc-arm-linux-gnueabi gcc-aarch64-linux-gnu
@@ -47,6 +56,22 @@ RUN rm /libmpc2_0.9-4_amd64.deb
 RUN apt-get install -y --force-yes gcc-4.7-mipsel-linux-gnu
 RUN update-alternatives --install /usr/bin/mipsel-linux-gnu-gcc gcc /usr/bin/mipsel-linux-gnu-gcc-4.7 50
 
+# For cross gdb
+RUN apt-get install -y software-properties-common
+RUN add-apt-repository -y ppa:fkrull/deadsnakes
+RUN apt-get -y update
+RUN apt-get install -y libpython2.6
+
+# Fixup /usr/share/gdb/syscalls/ conflicts issues by strip them from the list file
+RUN sed -i -e "/syscalls/d" /var/lib/dpkg/info/*gdb*.list
+RUN apt-get install -y gdb-arm-linux-gnueabi
+RUN sed -i -e "/syscalls/d" /var/lib/dpkg/info/*gdb*.list
+RUN apt-get install -y gdb-ia64-linux-gnu
+RUN sed -i -e "/syscalls/d" /var/lib/dpkg/info/*gdb*.list
+RUN apt-get install -y gdb-mipsel-linux-gnu
+RUN sed -i -e "/syscalls/d" /var/lib/dpkg/info/*gdb*.list
+RUN apt-get install -y gdb-powerpc-linux-gnu
+
 # NFS server
 RUN apt-get install -y nfs-kernel-server
 ADD rootfs/nfs-server-exports /etc/exports
@@ -61,23 +86,6 @@ RUN apt-get install -y u-boot-tools
 # Bison
 RUN apt-get install -y bison
 
-# Qemu user static
-RUN apt-get install -y qemu-user qemu-user-static
-
-# For Qemu 0.10
-RUN apt-get install -y libsdl1.2-dev
-
-# For cross gdb
-RUN apt-get install -y software-properties-common
-RUN add-apt-repository -y ppa:fkrull/deadsnakes
-RUN apt-get -y update
-RUN apt-get install -y libpython2.6
-# /usr/share/gdb/syscalls/sparc-linux.xml conflicts issue?
-# please install the as required
-RUN apt-get install -y gdb-arm-linux-gnueabi
-#RUN apt-get install -y gdb-ia64-linux-gnu
-#RUN apt-get install -y gdb-mipsel-linux-gnu
-#RUN apt-get install -y gdb-powerpc-linux-gnu
 
 # Allow ubuntu user use sudo without password
 ADD sudoers.d/ubuntu /etc/sudoers.d/

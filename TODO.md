@@ -8,4 +8,4 @@
 7. Add Ftrace support
 8. Add LDT, LDD3 examples, need kernel modules support
 9. Add some patchsets, e.g: Preempt-RT, GC-sections
-10. Add debug support, with CONFIG_DEBUG_INFO=y
+10. Add debug support, with CONFIG_DEBUG_INFO=y, CONFIG_DEBUG_KERNEL=y

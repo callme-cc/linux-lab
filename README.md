@@ -127,13 +127,14 @@ Debug it:
 
     Compile the kernel with CONFIG_DEBUG_INFO=y and boot it:
 
-    $ make boot DEBUG=1
+    $ make MACH=malta boot DEBUG=1
 
     Open a new terminal:
 
-    $ arm-linux-gnueabi-gdb output/arm/linux-4.6-versatilepb/vmlinux
+    $ gdb output/mipsel/linux-4.6-malta/vmlinux
     (gdb) target remote :1234
     (gdb) b kernel_entry
+    (gdb) b start_kernel
     (gdb) c
 
 
