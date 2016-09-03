@@ -1,19 +1,21 @@
 #!/bin/bash
 #
-# start the linux lab via docker with the shared source in $PWD/
+# start the linux lab via docker
 #
 
 TOP_DIR=$(dirname `readlink -f $0`)
 
 IMAGE=$(< ${TOP_DIR}/lab-name)
 
+short_lab_name=`basename ${IMAGE}`
 local_lab_dir=`dirname ${TOP_DIR}`
-remote_lab_dir=/`basename ${IMAGE}`/
+remote_lab_dir=/$short_lab_name/
 
 browser=chromium-browser
 remote_port=6080
 
-CONTAINER_ID=$(< $TOP_DIR/.lab_container_id)
+CONTAINER_ID=""
+[ -f $TOP_DIR/.lab_container_id ] && CONTAINER_ID=$(< $TOP_DIR/.lab_container_id)
 if [ -n "$CONTAINER_ID" ]; then
     docker ps -f id=$CONTAINER_ID | grep -v PORTS
     if [ $? -eq 0 ]; then
@@ -25,16 +27,17 @@ fi
 retry=0
 local_port=""
 
+local_port=""
 while :;
 do
-    [ $retry -eq 0 ] && local_port=$(< $TOP_DIR/.lab_local_port)
+    [ $retry -eq 0 ] && [ -f $TOP_DIR/.lab_local_port ] && local_port=$(< $TOP_DIR/.lab_local_port)
     [ -z "$local_port" -o $retry -ne 0 ] && local_port=$((RANDOM/500+6080))
 
     echo "new vnc port: $local_port"
 
     # Make sure it is unique
     ports=`docker ps -a | grep -v PORTS | grep "0.0.0.0:" | sed -e "s/.*0.0.0.0:\([0-9]*\)-.*/\1/g" | tr '\n' ' '`
-    echo "old vnc ports: $ports"
+    [ -n "$ports" ] && echo "old vnc ports: $ports"
 
     retry=1
     for port in $ports
@@ -56,6 +59,7 @@ pwd=ubuntu
 sudo modprobe nfsd
 
 CONTAINER_ID=$(docker run --privileged \
+		--name ${short_lab_name}-${local_port} \
                 --cap-add sys_admin --cap-add net_admin \
                 --device=/dev/net/tun \
                 -d -p $local_port:$remote_port \
@@ -66,7 +70,7 @@ echo "Wait for lab launching..."
 sleep 5
 
 pwd=`docker logs $CONTAINER_ID 2>/dev/null | grep Password`
-echo $pwd
+echo Container: ${CONTAINER_ID:0:12} $pwd
 
 unix_pwd=`echo $pwd | sed -e "s/.* Password: \([^ ]*\) .*/\1/g"`
 vnc_pwd=`echo $pwd | sed -e "s/.* VNC-Password: \(.*\)$/\1/g"`
