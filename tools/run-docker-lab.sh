@@ -64,9 +64,14 @@ CONTAINER_ID=$(docker run --privileged \
                 $IMAGE)
 
 echo "Wait for lab launching..."
-sleep 5
 
-pwd=`docker logs $CONTAINER_ID 2>/dev/null | grep Password`
+while :;
+do
+    pwd=`docker logs $CONTAINER_ID 2>/dev/null | grep Password`
+    sleep 2
+    [ -n "$pwd" ] && break
+done
+
 echo Container: ${CONTAINER_ID:0:12} $pwd
 
 unix_pwd=`echo $pwd | sed -e "s/.* Password: \([^ ]*\) .*/\1/g"`
