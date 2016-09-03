@@ -52,9 +52,6 @@ do
     echo "Retry $retry times to generate a random and unique port"
 done
 
-url=http://localhost:$local_port/vnc.html
-pwd=ubuntu
-
 # nfsd.ko must be inserted to enable nfs kernel server
 sudo modprobe nfsd
 
@@ -79,5 +76,7 @@ echo ${CONTAINER_ID:0:12} > $TOP_DIR/.lab_container_id
 echo $local_port > $TOP_DIR/.lab_local_port
 echo $unix_pwd > $TOP_DIR/.lab_unix_pwd
 echo $vnc_pwd > $TOP_DIR/.lab_login_pwd
+
+url=http://localhost:$local_port/vnc.html
 
 $TOP_DIR/open-docker-lab.sh
