@@ -20,6 +20,7 @@ For Linux 0.11, please try our [Linux 0.11 Lab](http://github.com/tinyclub/linux
 ## Build the Lab
 
     $ sudo tools/install-docker-lab.sh
+    $ tools/update-lab-uid.sh
     $ tools/run-docker-lab.sh
     $ tools/open-docker-lab.sh
 
