@@ -10,7 +10,7 @@
 9. Add some patchsets, e.g: Preempt-RT, GC-sections
 10. Add debug support, with CONFIG_DEBUG_INFO=y, CONFIG_DEBUG_KERNEL=y
 11. Resource limitation
-    * CPU, --cpuset-cpus=1 --cpu 512 (relative), docker run
+    * CPU, --cpuset-cpus=1 -c 512 (relative), docker run
     * MEM, -m 128M --memory-swap=128M, docker run
-    * HD, /etc/default/docker: dm.basesize=10G
-    * IO,  echo "253:1 10485760" > /cgroup/blkio/docker/$CONTAINER_ID/ blkio.throttle.write_bps_device
+    * HD, /etc/default/docker: --storage-opt dm.basesize=10G
+    * IO,  echo "253:1 10485760" > /sys/fs/cgroup/blkio/docker/$CONTAINER_ID/ blkio.throttle.write_bps_device
