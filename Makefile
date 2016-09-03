@@ -191,9 +191,6 @@ ifeq ($(ROOTDEV),/dev/nfs)
   CMDLINE += nfsroot=$(ROUTE):$(ROOTDIR) ip=$(IP)
 endif
 
-CMDLINE_NG = $(CMDLINE) console=$(SERIAL)
-CMDLINE_G = $(CMDLINE) console=$(CONSOLE)
-
 # For debug
 mach:
 	@find machine/$(MACH) -name "Makefile" -printf "[ %p ]:\n" -exec cat -n {} \; \
@@ -405,6 +402,9 @@ rconfig-save:
 
 save: root-save kernel-save rconfig-save kconfig-save
 
+# Graphic output
+G ?= 1
+
 # Launch Qemu, prefer our own instead of the prebuilt one
 BOOT_CMD = PATH=$(QEMU_OUTPUT)/$(ARCH)-softmmu/:$(PATH) $(EMULATOR) -M $(MACH) -m $(MEM) $(NET) -kernel $(KIMAGE)
 ifeq ($(U),0)
@@ -424,6 +424,14 @@ endif
 ifeq ($(DTB),$(wildcard $(DTB)))
   BOOT_CMD += -dtb $(DTB)
 endif
+ifeq ($(U),0)
+ifeq ($(G),0)
+  BOOT_CMD += -append '$(CMDLINE) console=$(SERIAL)'
+  BOOT_CMD += -nographic
+else
+  BOOT_CMD += -append '$(CMDLINE) console=$(CONSOLE)'
+endif
+endif
 ifneq ($(DEBUG),)
   BOOT_CMD += -s -S
 endif
@@ -442,13 +450,15 @@ ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR)/rootfs)
 endif
 
 ifeq ($(U),1)
+ifeq ($(PBR),0)
+  UROOTFS_SRC=$(BUILDROOT_ROOTFS)
+else
+  UROOTFS_SRC=$(PREBUILT_ROOTFS)
+endif
+
 $(ROOTFS):
 ifeq ($(findstring /dev/ram,$(ROOTDEV)),/dev/ram)
-  ifeq ($(PBR),0)
-	mkimage -A $(ARCH) -O linux -T ramdisk -C none -d $(BUILDROOT_ROOTFS) $@
-  else
-	mkimage -A $(ARCH) -O linux -T ramdisk -C none -d $(PREBUILT_ROOTFS) $@
-  endif
+	mkimage -A $(ARCH) -O linux -T ramdisk -C none -d $(UROOTFS_SRC) $@
 endif
 
 $(UKIMAGE):
@@ -473,20 +483,8 @@ endif
 endif
 endif
 
-boot-ng: rootdir tftp decompress
-ifneq ($(U),0)
-	$(BOOT_CMD) -nographic
-else
-	$(BOOT_CMD) -append "$(CMDLINE_NG)" -nographic
-endif
-
-
 boot: rootdir tftp decompress
-ifneq ($(U),0)
 	$(BOOT_CMD)
-else
-	$(BOOT_CMD) -append "$(CMDLINE_G)"
-endif
 
 # Allinone
 all: config build boot
