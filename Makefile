@@ -4,6 +4,8 @@
 
 TOP_DIR = $(CURDIR)
 
+USER ?= $(shell whoami)
+
 CONFIG = $(shell cat $(TOP_DIR)/.config 2>/dev/null)
 
 ifeq ($(CONFIG),)
@@ -439,8 +441,9 @@ endif
 rootdir:
 ifeq ($(ROOTDIR),$(PREBUILT_ROOTDIR)/rootfs)
 ifneq ($(PREBUILT_ROOTDIR)/rootfs,$(wildcard $(PREBUILT_ROOTDIR)/rootfs))
-	mkdir -p $(ROOTDIR) && cd $(ROOTDIR)/ && gunzip -f ../rootfs.cpio.gz && cpio -idmv < ../rootfs.cpio
-	git checkout -- $(PREBUILT_ROOTFS)
+	- mkdir -p $(ROOTDIR) && cd $(ROOTDIR)/ && gunzip -kf ../rootfs.cpio.gz \
+		&& sudo cpio -idmv -R $(USER):$(USER) < ../rootfs.cpio
+	chown $(USER):$(USER) -R $(ROOTDIR)
 endif
 endif
 
@@ -478,7 +481,6 @@ ifeq ($(HD),1)
 ifneq ($(PBR),0)
 ifneq ($(HROOTFS),$(wildcard $(HROOTFS)))
 	tools/rootfs/mkfs.sh $(ROOTDIR) $(FSTYPE)
-	git checkout -- ${PREBUILT_ROOTFS}
 endif
 endif
 endif

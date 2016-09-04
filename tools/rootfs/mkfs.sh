@@ -8,6 +8,8 @@ FSTYPE=$2
 
 [ -z "${FSTYPE}" ] && FSTYPE=ext2
 
+[ -z "${USER}" ] && USER=$(whoami)
+
 ROOTFS=${ROOTDIR}/../rootfs.${FSTYPE}
 
 if [ -f ${ROOTDIR}/../rootfs.cpio.gz ]; then
@@ -28,8 +30,9 @@ mkdir -p ${ROOTDIR}
 sudo mount ${ROOTFS} ${ROOTDIR}
 
 pushd ${ROOTDIR}
-[ -f ../rootfs.cpio.gz ] && gunzip -f ../rootfs.cpio.gz
-sudo cpio --quiet -idmv < ../rootfs.cpio 2>&1 >/dev/null
+[ -f ../rootfs.cpio.gz ] && gunzip -kf ../rootfs.cpio.gz
+sudo cpio --quiet -idmv -R ${USER}:${USER} < ../rootfs.cpio 2>&1 >/dev/null
+chown ${USER}:${USER} -R ./
 sync
 popd
 

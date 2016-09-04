@@ -14,3 +14,5 @@
     * MEM, -m 128M --memory-swap=128M, docker run
     * HD, /etc/default/docker: --storage-opt dm.basesize=10G
     * IO,  echo "253:1 10485760" > /sys/fs/cgroup/blkio/docker/$CONTAINER_ID/ blkio.throttle.write_bps_device
+12. Make everything work with minimal root permission for specific binaries with 'sudo'+nopasswd
+13. Add user demostration with showterm.io and lxsession record
