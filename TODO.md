@@ -16,3 +16,4 @@
     * IO,  echo "253:1 10485760" > /sys/fs/cgroup/blkio/docker/$CONTAINER_ID/ blkio.throttle.write_bps_device
 12. Make everything work with minimal root permission for specific binaries with 'sudo'+nopasswd
 13. Add user demostration with showterm.io and lxsession record
+14. Add https support? or at least add ssl support for x11vnc or novnc itself.
