@@ -221,7 +221,7 @@ kernel-source:
 buildroot-source:
 	git submodule update --init buildroot
 
-source: qemu-source kernel-source buildroot-source
+source: kernel-source buildroot-source
 
 # Qemu
 
