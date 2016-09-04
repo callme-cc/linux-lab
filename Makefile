@@ -34,7 +34,8 @@ QEMU_SRC ?= $(TOP_DIR)/qemu/
 BOOTLOADER_GIT ?= https://github.com/u-boot/u-boot.git
 BOOTLOADER_SRC ?= $(TOP_DIR)/u-boot/
 
-KERNEL_GIT ?= git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
+KERNEL_GIT ?= https://github.com/tinyclub/linux-stable.git
+# git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable.git
 KERNEL_SRC ?= $(TOP_DIR)/linux-stable/
 
 # Use faster mirror instead of git://git.buildroot.net/buildroot.git
