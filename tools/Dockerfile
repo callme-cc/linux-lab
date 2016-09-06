@@ -86,6 +86,14 @@ RUN apt-get install -y u-boot-tools
 # Bison
 RUN apt-get install -y bison
 
+RUN apt-get install -y ruby
+RUN gem sources -r http://rubygems.org/
+RUN gem sources -r https://rubygems.org/
+RUN gem sources -a https://ruby.taobao.org/
+
+RUN gem install showterm
+
+RUN apt-get install -y chromium-browser
 
 # Allow ubuntu user use sudo without password
 ADD sudoers.d/ubuntu /etc/sudoers.d/
@@ -93,6 +101,7 @@ RUN chmod 440 /etc/sudoers.d/ubuntu
 
 # Add shortcuts on Desktop
 ADD lab.desktop /
+ADD help.desktop /
 
 # Add lab-name
 ADD lab-name /
