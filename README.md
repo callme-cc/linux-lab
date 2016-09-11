@@ -111,7 +111,7 @@ Boot it:
 
     $ make boot     # Boot with graphic
 
-    $ make boot G=0  # Boot with serial port (no graphic), exit with 'pkill qemu'
+    $ make boot G=0  # Boot with serial port (no graphic), exit with 'CTRL+a x' or 'pkill qemu'
 
     $ make boot PBK=0 PBD=0 PBR=0 # Disable prebuilt kernel, dtb and rootfs
 
